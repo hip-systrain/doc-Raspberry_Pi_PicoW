@@ -141,5 +141,5 @@ GPIOは、マイコンと外部の電子部品を接続して、信号の入出�
 - タイマーや割込みの機能一覧  
 [Pico SDK High Level APIs](https://www.raspberrypi.com/documentation/pico-sdk/high_level.html?utm_source=chatgpt.com)  
 - vscodeとpico拡張機能を利用方法  
-[vscodeとpico拡張機能を利用方法](https://pip-assets.raspberrypi.com/categories/609-microcontroller-boards/documents/RP-008276-DS-4-getting-started-with-pico.pdf)
+[Getting Started with Raspberry Pi Pico-series](https://pip-assets.raspberrypi.com/categories/609-microcontroller-boards/documents/RP-008276-DS-4-getting-started-with-pico.pdf)
 
