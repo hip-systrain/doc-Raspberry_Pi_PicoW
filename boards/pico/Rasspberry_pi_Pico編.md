@@ -59,10 +59,123 @@
 ### 3.2 プロジェクトの構成(フォルダ・ファイルの役割)
 
 ## 4. コーディング・ビルド・書込み(RTOSなし)
-
 <!-- 各題材の節は「作るもの → 配線 → プログラム → ビルドと書込み → 動作確認」の順で書く -->
 
 ### 4.1 題材1:LED点滅
+### 4.1.1 題材1で作成するもの
+題材1ではボード上にあるLEDを点滅させるプログラムを作成します
+### 4.1.2 配線
+配線は以下の図を参照
+
+### 4.1.3 プログラム
+題材1の動作に必要なファイルの詳細を記載する。  
+以下の折りたたみの内容を該当するファイルに貼り付けること
+<details>
+<summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
+[プロジェクト名].cppファイル内のコードを以下に変更する。
+
+```cpp
+#include <stdio.h>
+#include "pico/stdlib.h"       // Pico SDKの基本機能を使用するためのヘッダ
+#include "pico/cyw43_arch.h"   // CYW43チップ（オンボードLED）の制御用ヘッダ
+
+int main(void)
+{
+    // CYW43チップを初期化する
+    // 初期化に失敗した場合はプログラムを終了する
+    if (cyw43_arch_init()) {
+        return -1;
+    }
+
+    // LEDの点滅処理を繰り返す
+    while (true) {
+
+        // オンボードLEDを点灯させる（1：点灯）
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 1);
+
+        // 500ミリ秒（0.5秒）待機する
+        sleep_ms(500);
+
+        // オンボードLEDを消灯させる（0：消灯）
+        cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+
+        // 500ミリ秒（0.5秒）待機する
+        sleep_ms(500);
+    }
+
+    return 0;
+}
+```
+</details>
+
+<details>
+<summary>CMakeLists.txt内の変更(クリックして詳細を表示)</summary> 
+CMakeLists.txtは全て変更はせず、以下の項目のみ変更する
+
+```
+変更前
+# Add the standard library to the build
+target_link_libraries([プロジェクト名]
+        pico_stdlib)
+```
+
+```
+変更後
+# Add the standard library to the build
+target_link_libraries([プロジェクト名]
+        pico_stdlib
+        pico_cyw43_arch_none)
+```
+
+</details>
+
+### 4.1.4 ビルドと書き込み
+#### ビルド  
+コーディング後、以下の手順でビルドを行う
+1. vscodeの画面下部にある**compileボタン**を押下
+2. ターミナルが表示されビルドが実行される
+3. **ターミナルはタスクで再利用されます、閉じるには任意のキーを押してください。**と表示でビルド終了 
+4. ターミナルの右枠にある**Compile Project**にチェックマークがついていていることを確認
+5. buildフォルダに.uf2ファイルが存在することを確認
+![daizai1_2_comp.png](./images/p2/p2_4_comp.png)
+
+#### 書き込み  
+ビルド完了後、ボードに.uf2ファイルを書き込む必要がある
+書き込む手順は3種類あり、以下にその手順を記載する
+- USB接続による書き込み（ドライブにコピー）
+  1. ボードのbootselボタンを押しながらUSBでPCに接続する
+  2. ドライブが認識されたら**bootselボタン**を離す
+  3. buildフォルダにある.uf2ファイルをコピー
+  4. 認識したドライブの直下にファイルをコピー
+  5. コピー後、ドライブが切断される  
+認識されるドライブと.uf2ファイルのコピーを下図に記載する
+<br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">
+認識したドライブの直下にファイルをコピー
+<br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">
+- picotoolによる書き込み（USB経由）
+  1. ボードの**bootselボタン**を押しながらUSBでPCに接続する
+  2. ドライブが認識されたら**bootselボタン**を離す
+  3. vscodeの画面下部にある**runボタン**を押下
+  4. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認
+
+- Debug Probeによる書き込み（SWD経由）
+  1. Debug ProbeのD側をPicoのDEBUG端子に接続
+  2. 接続したDebug ProbeをPCに接続
+  3. picoとPCをUSBで接続
+  4. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
+  5. 表示されるメニューから**Flash Project (SWD)**を実行
+  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認
+
+上記のいずれかの方法で書き込みを行う
+
+#### 動作確認
+書き込みを実施後、ボードのLEDが0.5秒の間隔で点滅していることを確認する
+
+
+
+
+
+
 ### 4.2 題材2:ボタン入力
 ### 4.3 題材3:UART出力
 ### 4.4 題材4:タイマ割込み
