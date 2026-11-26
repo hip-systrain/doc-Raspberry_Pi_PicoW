@@ -178,8 +178,14 @@ target_link_libraries([プロジェクト名]
 2. ターミナルが表示されビルドが実行される
 3. **ターミナルはタスクで再利用されます、閉じるには任意のキーを押してください。**と表示でビルド終了 
 4. ターミナルの右枠にある**Compile Project**にチェックマークがついていていることを確認
-5. buildフォルダに.uf2ファイルが存在することを確認
-![daizai1_2_comp.png](./images/p2/p2_4_comp.png)
+5. buildフォルダに.uf2ファイルが存在することを確認  
+
+参照画像
+<details>
+<summary>CompileボタンとCompile Projectの確認(クリックして詳細を表示)</summary>  
+
+![daizai1_2_comp.png](./images/p2/p2_4_comp.png)  
+</details>
 
 #### 書き込み  
 ビルド完了後、ボードに.uf2ファイルを書き込む必要がある
@@ -193,7 +199,8 @@ target_link_libraries([プロジェクト名]
 
   参照画像
     <details>
-    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary> 
+    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary>
+
     ※pico Wではドライブ名は**RPI-RP2**  
     　pico 2Wではドライブ名は**RP2350**
     <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
@@ -257,11 +264,10 @@ const uint BUTTON_PIN = 14;
 // チャタリングを除去するための待ち時間（20000マイクロ秒）
 const uint32_t DEBOUNCE_TIME_US = 20000;
 
-/* 
-* 割込み処理とメイン処理で共有する変数
-* volatileを付けることで、割込み処理による値の変更を
-* メイン処理が正しく認識できるようにする
-*/
+ 
+//割込み処理とメイン処理で共有する変数
+//volatileを付けることで、割込み処理による値の変更を
+//メイン処理が正しく認識できるようにする
 volatile bool button_changed = false;
 
 // 最後にボタンの割込みが発生した時刻（マイクロ秒）
