@@ -103,12 +103,13 @@
 <!-- 各題材の節は「作るもの → 配線 → プログラム → ビルドと書込み → 動作確認」の順で書く -->
 
 ### 4.1 題材1:LED点滅
-### 4.1.1 題材1で作成するもの
+#### 4.1.1 題材1で作成するもの
 題材1ではボード上にあるLEDを点滅させるプログラムを作成します
-### 4.1.2 配線
+
+#### 4.1.2 配線 <!-- 記載の有無を要確認 -->
 配線は以下の図を参照
 
-### 4.1.3 プログラム
+#### 4.1.3 プログラム
 題材1の動作に必要なファイルの詳細を記載する。  
 以下の折りたたみの内容を該当するファイルに貼り付けること
 <details>
@@ -170,7 +171,7 @@ target_link_libraries([プロジェクト名]
 
 </details>
 
-### 4.1.4 ビルドと書き込み
+#### 4.1.4 ビルドと書き込み
 #### ビルド  
 コーディング後、以下の手順でビルドを行う
 1. vscodeの画面下部にある**compileボタン**を押下
@@ -189,15 +190,30 @@ target_link_libraries([プロジェクト名]
   3. buildフォルダにある.uf2ファイルをコピー
   4. 認識したドライブの直下にファイルをコピー
   5. コピー後、ドライブが切断される  
-認識されるドライブと.uf2ファイルのコピーを下図に記載する
-<br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">
-認識したドライブの直下にファイルをコピー
-<br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">
+
+  参照画像
+    <details>
+    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary> 
+    ※pico Wではドライブ名は**RPI-RP2**  
+    　pico 2Wではドライブ名は**RP2350**
+    <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
+    </details>
+
+  <details>
+  <summary>認識したドライブの直下にファイルをコピー(クリックして詳細を表示)</summary> 
+  <br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">  
+  </details>  
 - picotoolによる書き込み（USB経由）
   1. ボードの**bootselボタン**を押しながらUSBでPCに接続する
   2. ドライブが認識されたら**bootselボタン**を離す
-  3. vscodeの画面下部にある**runボタン**を押下
-  4. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認
+  3. vscodeの画面下部にある**Runボタン**を押下
+  4. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認  
+
+  参照画像
+  <details>
+  <summary>RunボタンとRun Projectの確認(クリックして詳細を表示)</summary> 
+    <br><img src="./images/p2/p2_4_run.png"  alt="p2_4_run.png">  
+  </details>  
 
 - Debug Probeによる書き込み（SWD経由）
   1. Debug ProbeのD側をPicoのDEBUG端子に接続
@@ -205,21 +221,203 @@ target_link_libraries([プロジェクト名]
   3. picoとPCをUSBで接続
   4. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
   5. 表示されるメニューから**Flash Project (SWD)**を実行
-  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認
+  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認  
+
+  参照画像
+  <details>
+  <summary>Flash ProjectとFlushの確認(クリックして詳細を表示)</summary> 
+    <br><img src="./images/p2/p2_4_Flash.png"  alt="p2_4_Flash.png">  
+  </details>  
 
 上記のいずれかの方法で書き込みを行う
 
-#### 動作確認
-書き込みを実施後、ボードのLEDが0.5秒の間隔で点滅していることを確認する
-
-
-
-
-
+#### 4.1.5 動作確認
+書き込みを実施後、ボードのオンボードLEDが0.5秒の間隔で点滅していることを確認する
 
 ### 4.2 題材2:ボタン入力
+#### 4.2.1 題材2で作成するもの
+題材2では、ボードのトグルボタンを押すと、オンボードのLEDが点灯するプログラムを作成します
+#### 4.2.2 配線 <!-- 記載の有無を要確認 -->
+#### 4.2.3 プログラム
+題材2の動作に必要なファイルの詳細を記載する。
+以下の変更を該当するファイルに貼り付けること
+<details>
+<summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
+[プロジェクト名].cppファイル内のコードを以下に変更する。
+
+```cpp
+
+#include "pico/stdlib.h"       // GPIOや時間管理など、Pico SDKの基本機能
+#include "pico/cyw43_arch.h"   // Pico 2 WのオンボードLEDを制御する機能
+#include "hardware/sync.h"     // 割込みの一時停止・再開に使用する機能
+
+// ボタンを接続するGPIO番号
+const uint BUTTON_PIN = 14;
+
+// チャタリングを除去するための待ち時間（20000マイクロ秒）
+const uint32_t DEBOUNCE_TIME_US = 20000;
+
+/* 
+* 割込み処理とメイン処理で共有する変数
+* volatileを付けることで、割込み処理による値の変更を
+* メイン処理が正しく認識できるようにする
+*/
+volatile bool button_changed = false;
+
+// 最後にボタンの割込みが発生した時刻（マイクロ秒）
+volatile uint32_t interrupt_time = 0;
+
+
+// GPIO割込み発生時に呼び出されるコールバック関数
+void gpio_callback(uint gpio, uint32_t events)
+{
+    // 対象のGPIO以外から割込みが発生した場合は処理しない
+    if (gpio != BUTTON_PIN) {
+        return;
+    }
+
+    // ボタンの状態が変化したことをメイン処理に通知する
+    button_changed = true;
+
+    // 割込みが発生した時刻を記録する
+    // チャタリング中は割込みが複数回発生するため、
+    // 最後に発生した時刻が更新される
+    interrupt_time = time_us_32();
+}
+
+
+int main(void)
+{
+    // CYW43チップを初期化する
+    // 初期化に失敗した場合はプログラムを終了する
+    if (cyw43_arch_init()) {
+        return -1;
+    }
+
+    // 起動時にオンボードLEDを消灯する
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+
+    // ボタン用GPIOを初期化する
+    gpio_init(BUTTON_PIN);
+
+    // GPIOを入力モードに設定する
+    gpio_set_dir(BUTTON_PIN, GPIO_IN);
+
+    // 内部プルアップ抵抗を有効にする
+    // ボタン未押下：HIGH
+    // ボタン押下中：LOW（ボタンをGNDに接続する場合）
+    gpio_pull_up(BUTTON_PIN);
+
+    // GPIOの立ち下がり・立ち上がりの両方で割込みを有効にする
+    // FALL：HIGHからLOW（ボタンを押したとき）
+    // RISE：LOWからHIGH（ボタンを離したとき）
+    gpio_set_irq_enabled_with_callback(
+        BUTTON_PIN,
+        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+        true,
+        &gpio_callback
+    );
+
+    // 現在のボタン状態を保持する変数
+    // false：未押下、true：押下中
+    bool button_pressed = false;
+
+    // メインループ
+    while (true) {
+
+        // 割込み処理によってボタンの状態変化が通知された場合
+        if (button_changed) {
+
+            // 割込みを一時停止する
+            // 割込み処理とメイン処理が共有変数を同時に変更することを防ぐ
+            uint32_t irq_state = save_and_disable_interrupts();
+
+            // 最後の割込み発生から20ミリ秒以上経過したか確認する
+            // チャタリングが収まるまで状態の確定を待つ
+            if ((uint32_t)(time_us_32() - interrupt_time)
+                >= DEBOUNCE_TIME_US) {
+
+                // GPIOの現在の状態を読み取る
+                // LOWなら押下中、HIGHなら未押下
+                bool current_state = (gpio_get(BUTTON_PIN) == 0);
+
+                // 状態変化の通知を解除する
+                button_changed = false;
+
+                // 割込みを再開する
+                restore_interrupts(irq_state);
+
+                // 前回確定した状態と現在の状態を比較する
+                if (current_state != button_pressed) {
+
+                    // ボタンの状態を更新する
+                    button_pressed = current_state;
+
+                    // ボタンを押している間はLEDを点灯し、
+                    // 離している間はLEDを消灯する
+                    cyw43_arch_gpio_put(
+                        CYW43_WL_GPIO_LED_PIN,
+                        button_pressed
+                    );
+                }
+
+            } else {
+                // 20ミリ秒経過していない場合は、
+                // チャタリングが収まっていないと判断して割込みを再開する
+                restore_interrupts(irq_state);
+            }
+        }
+
+        // メインループ内でほかに処理がない場合の補助関数
+        tight_loop_contents();
+    }
+
+    return 0;
+}
+```
+</details>
+
+<br>CMakeLists.txt内の変更  
+[# 4.1.3 プログラム](#413-プログラム)のCMakeLists.txt内の変更の折りたたみの内容であることを確認する
+
+
+#### 4.2.4 ビルドと書き込み
+#### ビルド  
+**4.1.4 ビルドと書き込み**にある[ビルド](#ビルド)の項目を参照し、ビルドを行う。
+
+#### 書き込み  
+**4.1.4 ビルドと書き込み**にある[書き込み](#書き込み)の項目を参照し、ビルドを行う。
+
+#### 4.2.5 動作確認  
+トグルボタンを押下するとLEDが点灯し、離すと消灯することを確認する
+
 ### 4.3 題材3:UART出力
+#### 4.3.1 題材1で作成するもの
+
+#### 4.3.2 配線 <!-- 記載の有無を要確認 -->
+
+#### 4.3.3 プログラム
+
+#### 4.3.4 ビルドと書き込み
+#### ビルド
+
+#### 書き込み
+
+#### 4.3.5動作確認
+
 ### 4.4 題材4:タイマ割込み
+#### 4.4.1 題材1で作成するもの
+
+#### 4.4.2 配線 <!-- 記載の有無を要確認 -->
+
+#### 4.4.3 プログラム
+
+#### 4.4.4 ビルドと書き込み
+#### ビルド
+
+#### 書き込み
+
+#### 4.4.5 動作確認
 
 ## 5. コーディング・ビルド・書込み(FreeRTOS)
 
