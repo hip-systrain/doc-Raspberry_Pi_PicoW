@@ -101,6 +101,10 @@
 
 ## 4. コーディング・ビルド・書込み(RTOSなし)
 <!-- 各題材の節は「作るもの → 配線 → プログラム → ビルドと書込み → 動作確認」の順で書く -->
+プロジェクト作成後、以下の題材1~4を元に、プログラムの作成からボードへの書き込みを実際に実施する。  
+  
+各題材のプログラムについてはraspberry pi 公式の[Hardware APIs](https://www.raspberrypi.com/documentation/pico-sdk/hardware.html)を参照
+
 
 ### 4.1 題材1:LED点滅
 #### 4.1.1 題材1で作成するもの
@@ -178,13 +182,18 @@ target_link_libraries([プロジェクト名]
 2. ターミナルが表示されビルドが実行される
 3. **ターミナルはタスクで再利用されます、閉じるには任意のキーを押してください。**と表示でビルド終了 
 4. ターミナルの右枠にある**Compile Project**にチェックマークがついていていることを確認
-5. buildフォルダに.uf2ファイルが存在することを確認  
+5. buildフォルダに.uf2ファイルが存在していればビルド成功  
 
 参照画像
 <details>
 <summary>CompileボタンとCompile Projectの確認(クリックして詳細を表示)</summary>  
 
-![daizai1_2_comp.png](./images/p2/p2_4_comp.png)  
+![p2_4_comp.png](./images/p2/p2_4_comp.png)  
+</details>
+
+<details>
+<summary>ビルド後に生成される.uf2ファイル(クリックして詳細を表示)</summary>
+<br><img src="./images/p2/p2_4_uf2.png"  style="border: 1px solid black;" alt="p2_4_uf2.png">  
 </details>
 
 #### 書き込み  
@@ -261,16 +270,17 @@ target_link_libraries([プロジェクト名]
 // ボタンを接続するGPIO番号
 const uint BUTTON_PIN = 14;
 
-// チャタリングを除去するための待ち時間（20000マイクロ秒）
+// チャタリングを除去するための待ち時間（20ミリ秒）
 const uint32_t DEBOUNCE_TIME_US = 20000;
 
  
 //割込み処理とメイン処理で共有する変数
-//volatileを付けることで、割込み処理による値の変更を
-//メイン処理が正しく認識できるようにする
+//volatileを付けることで、コンパイラによる最適化を制限する
+
+//ボタンの状態変化が発生したことをメイン処理に通知する
 volatile bool button_changed = false;
 
-// 最後にボタンの割込みが発生した時刻（マイクロ秒）
+// 最後にボタンの割込みが発生した後の経過時間を記録
 volatile uint32_t interrupt_time = 0;
 
 
@@ -286,8 +296,7 @@ void gpio_callback(uint gpio, uint32_t events)
     button_changed = true;
 
     // 割込みが発生した時刻を記録する
-    // チャタリング中は割込みが複数回発生するため、
-    // 最後に発生した時刻が更新される
+    // チャタリング中は割込みが複数回発生するため、最後に発生した時刻が更新される
     interrupt_time = time_us_32();
 }
 
@@ -295,7 +304,6 @@ void gpio_callback(uint gpio, uint32_t events)
 int main(void)
 {
     // CYW43チップを初期化する
-    // 初期化に失敗した場合はプログラムを終了する
     if (cyw43_arch_init()) {
         return -1;
     }
@@ -398,21 +406,236 @@ int main(void)
 トグルボタンを押下するとLEDが点灯し、離すと消灯することを確認する
 
 ### 4.3 題材3:UART出力
-#### 4.3.1 題材1で作成するもの
+#### 4.3.1 題材3で作成するもの
+UARTを利用してシリアルターミナルにボタンを押した回数をメッセージ出力するプログラムを作成する。
 
 #### 4.3.2 配線 <!-- 記載の有無を要確認 -->
 
 #### 4.3.3 プログラム
+題材3の動作に必要なファイルの詳細を記載する。  
+以下の折りたたみの内容を該当するファイルに貼り付けること
+<details>
+<summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
+[プロジェクト名].cppファイル内のコードを以下に変更する。
+
+```cpp
+#include <cstdio>              // printf()を使用するためのヘッダ
+#include "pico/stdlib.h"       // Pico SDKの基本機能
+#include "hardware/uart.h"    // UART通信機能
+#include "hardware/sync.h"    // 割込みの一時停止・再開機能
+
+// ボタンを接続するGPIO番号
+const uint BUTTON_PIN = 14;
+
+// UARTの通信設定
+const uint UART_TX_PIN = 0;        // UART送信ピン（GP0）
+const uint UART_RX_PIN = 1;        // UART受信ピン（GP1）
+const uint32_t UART_BAUD_RATE = 115200;  //teratermのシリアルボード設定のスピードの値
+
+// チャタリング除去時間（20ミリ秒）
+const uint32_t DEBOUNCE_TIME_US = 20000;
+
+// ボタンの状態変化を通知するフラグ
+volatile bool button_changed = false;
+
+// 最後に割込みが発生した時刻
+volatile uint32_t interrupt_time = 0;
+
+
+// GPIO割込み発生時に呼び出される関数
+void gpio_callback(uint gpio, uint32_t events)
+{
+    // 対象のGPIO以外は処理しない
+    if (gpio != BUTTON_PIN) {
+        return;
+    }
+
+    // ボタンの状態が変化したことを通知
+    button_changed = true;
+
+    // 割込み発生時刻を記録
+    interrupt_time = time_us_32();
+}
+
+
+int main(void)
+{
+
+    // UARTなどの標準入出力を初期化する
+    stdio_init_all();
+    
+    // ボタン用GPIOを初期化
+    gpio_init(BUTTON_PIN);
+    gpio_set_dir(BUTTON_PIN, GPIO_IN);
+    gpio_pull_up(BUTTON_PIN);
+
+    // GPIOの立ち下がり・立ち上がりで割込みを有効にする
+    gpio_set_irq_enabled_with_callback(
+        BUTTON_PIN,
+        GPIO_IRQ_EDGE_FALL | GPIO_IRQ_EDGE_RISE,
+        true,
+        &gpio_callback
+    );
+
+    // ボタンの押下回数
+    uint32_t press_count = 0;
+
+    // 前回確定したボタンの状態
+    bool button_pressed = false;
+
+    // メインループ
+    while (true) {
+
+        // ボタンの状態変化が通知されている場合
+        if (button_changed) {
+
+            // 割込みを一時停止
+            uint32_t irq_state = save_and_disable_interrupts();
+
+            // 最後の割込みから20ミリ秒経過したか確認
+            if ((uint32_t)(time_us_32() - interrupt_time)
+                >= DEBOUNCE_TIME_US) {
+
+                // 現在のボタン状態を取得
+                // LOWの場合は押下中
+                bool current_state = (gpio_get(BUTTON_PIN) == 0);
+
+                // 状態変化の通知を解除
+                button_changed = false;
+
+                // 割込みを再開
+                restore_interrupts(irq_state);
+
+                // ボタンの状態が変化した場合
+                if (current_state != button_pressed) {
+
+                    // ボタンの状態を更新
+                    button_pressed = current_state;
+
+                    // ボタンが押された場合のみカウント
+                    if (button_pressed) {
+
+                        // 押下回数を1増やす
+                        press_count++;
+
+                        // シリアルターミナルにメッセージを出力
+                        printf("押下回数: %lu回\n",
+                               (unsigned long)press_count);
+                    }
+                }
+
+            } else {
+                // 20ミリ秒経過していない場合は割込みを再開
+                restore_interrupts(irq_state);
+            }
+        }
+
+        // ループ処理によるCPUの負荷軽減
+        sleep_ms(1);
+    }
+
+    return 0;
+}
+
+
+```
+
+</details>
+
+<details>
+<summary>CMakeLists.txt内の変更(クリックして詳細を表示)</summary> 
+CMakeLists.txtは全て変更はせず、以下の項目のみ変更する
+
+```
+変更前
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart([プロジェクト名] 0)
+pico_enable_stdio_usb([プロジェクト名] 1)
+```
+
+```
+変更後
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart([プロジェクト名] 1)
+pico_enable_stdio_usb([プロジェクト名] 0) 
+```
+
+</details>
 
 #### 4.3.4 ビルドと書き込み
-#### ビルド
+#### ビルド  
+**4.1.4 ビルドと書き込み**にある[ビルド](#ビルド)の項目を参照し、ビルドを行う。
 
-#### 書き込み
+#### 書き込み  
+ビルド完了後、ボードに.uf2ファイルを書き込む必要がある
+書き込む手順は3種類あり、以下にその手順を記載する
+- USB接続による書き込み（ドライブにコピー）
+  1. Debug ProbeのD側をPicoのDEBUG端子に接続
+  2. 接続したDebug ProbeをPCに接続
+  3. ボードのbootselボタンを押しながらUSBでPCに接続する
+  4. ドライブが認識されたら**bootselボタン**を離す
+  5. buildフォルダにある.uf2ファイルをコピー
+  6. 認識したドライブの直下にファイルをコピー
+  7. コピー後、ドライブが切断される
+
+  参照画像
+    <details>
+    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary>
+
+    ※pico Wではドライブ名は**RPI-RP2**  
+    　pico 2Wではドライブ名は**RP2350**
+    <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
+    </details>
+
+  <details>
+  <summary>認識したドライブの直下にファイルをコピー(クリックして詳細を表示)</summary> 
+  <br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">  
+  </details>  
+- picotoolによる書き込み（USB経由）
+  1. Debug ProbeのD側をPicoのDEBUG端子に接続
+  2. 接続したDebug ProbeをPCに接続
+  3. ボードの**bootselボタン**を押しながらUSBでPCに接続する
+  4. ドライブが認識されたら**bootselボタン**を離す
+  5. vscodeの画面下部にある**Runボタン**を押下
+  6. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認  
+
+  参照画像
+  <details>
+  <summary>RunボタンとRun Projectの確認(クリックして詳細を表示)</summary> 
+    <br><img src="./images/p2/p2_4_run.png"  alt="p2_4_run.png">  
+  </details>  
+
+- Debug Probeによる書き込み（SWD経由）
+  1. Debug ProbeのD側をPicoのDEBUG端子に接続
+  2. 接続したDebug ProbeをPCに接続
+  3. picoとPCをUSBで接続
+  4. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
+  5. 表示されるメニューから**Flash Project (SWD)**を実行
+  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認  
+
+  参照画像
+  <details>
+  <summary>Flash ProjectとFlushの確認(クリックして詳細を表示)</summary> 
+    <br><img src="./images/p2/p2_4_Flash.png"  alt="p2_4_Flash.png">  
+  </details>  
+
+上記のいずれかの方法で書き込みを行う
 
 #### 4.3.5動作確認
+teratermを使用し、以下の手順でメッセージの確認を行う  
+1. teratermを起動
+2. シリアルを選択
+3. ボードはUSB シリアル デバイスを選択
+4. OKを押下
+5. 設定タブからシリアルポートを選択
+6. スピードの項目を115200に変更  
+※プログラム記載のUART_BAUD_RATEの値を設定  
+7. ボードのトグルスイッチを複数回押下
+8. スイッチの押下1回ごとにメッセージが表示され、表示内容が**押下回数: (押下回数)回**であることを確認すれば成功
+
 
 ### 4.4 題材4:タイマ割込み
-#### 4.4.1 題材1で作成するもの
+#### 4.4.1 題材4で作成するもの
 
 #### 4.4.2 配線 <!-- 記載の有無を要確認 -->
 
