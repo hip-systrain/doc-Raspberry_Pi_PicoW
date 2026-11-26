@@ -104,6 +104,8 @@
 
 1. マイコンとPCをUSBケーブルで接続
 
+>確認：[2.3 動作確認](#23-動作確認)にて、手順5を実施できれば成功
+
 #### 2.1.2 デバッグプローブ経由の接続
 
 |必要なツール|概要|
@@ -116,6 +118,8 @@
 	**画像**：マイコンの GP0,GP1,GNDに対応した接続穴に、プローブの透明箱の「U」から伸びる三本線を黄色→赤→黒の順で接続することがわかる画像
 2. マイコンとPCを、USB(黒)で接続
 3. デバッグプローブとPCを、USB(白)で接続
+
+>確認：[2.3 動作確認](#23-動作確認)にて、手順7を実施できれば成功
 
 ### 2.2 通信設定(ポート、ボーレートなど)
 本節では、Tera Termでシリアル通信を行う際の設定値を示す。
@@ -131,38 +135,37 @@
 |フロー制御|none|none|
 
 - **COMポート番号の確認方法**
-	COMポート番号は、デバイスマネージャーから確認できる。
-	対象機器のUSBケーブルを抜き差しすることで、対応するCOMポートを特定できる。
-	**画像**：COMポートの確認箇所
+	<br>COMポート番号は、デバイスマネージャーから確認できる。
+	<br>対象機器のUSBケーブルを抜き差しすることで、対応するCOMポートを特定できる。
+	<br>![daizai1_2_comp.png](./images/p1/p1_2_DeviceManager_SerialPort.png)
 
 ### 2.3 動作確認
-本節では、Tera Termでシリアル通信を行うための設定手順を説明する。
-<br>なお、通信設定にはUSB通信及びUART通信の両方に対応したサンプルプログラムを使用する。
+本節では、USB経由およびデバッグプローブ経由の両方で、シリアル通信が正常に行えることを確認する。
 
 1. 下記のuf2ファイルをダウンロード
-	[hello_universal.uf2](https://github.com/raspberrypi/pico-sdk-prebuilts/releases/latest/download/hello_universal.uf2)  （配布元：[Raspberry Pi公式GitHub](https://github.com/raspberrypi/pico-sdk-prebuilts)）
+	<br>[hello_universal.uf2](https://github.com/raspberrypi/pico-sdk-prebuilts/releases/latest/download/hello_universal.uf2)  （配布元：[Raspberry Pi公式GitHub](https://github.com/raspberrypi/pico-sdk-prebuilts)）
 
 2. マイコンのBOOTSELボタンを押しながら、USBケーブル(黒)でPCとマイコンを接続
 
 3. 接続されたドライブに、ダウンロードしたuf2ファイルを格納
     >注意：接続されるドライブ名はボードによって異なる。
-    >**RPI-RP2**：Pico Wの場合
-    >**RP2350** ：Pico 2 Wの場合
+    ><br>**RPI-RP2**：Pico Wの場合
+    ><br>**RP2350** ：Pico 2 Wの場合
 
-4. Tera Termを起動し、シリアル欄より動作確認したいポート番号を指定
-	![daizai1_2_comp.png](./images/p1/p1_2_TeraTerm_init.png)
+	>注意：ファイル格納後にドライブが自動切断されるが、正常な挙動であるため問題なし。
 
-5. 設定タブより「シリアルポート」を選択し、設定値を[2.2 通信設定](#22-通信設定ポートボーレートなど)通りに変更
-	![daizai1_2_comp.png](./images/p1/p1_2_TeraTerm_SerialPort_Config1.png)
+4. Tera Termを起動し、シリアル欄より「USB経由の接続を行ったポート番号」を指定
+	<br>![daizai1_2_comp.png](./images/p1/p1_2_TeraTerm_init.png)
 
-	>確認：Tera Termの画面で、1秒おきに下記文字列が表示されていれば成功
-	>**Hello, world!**
-	>**I'm an RP2040**
+5. 設定タブより「シリアルポート」を選択し、設定値を[2.2 通信設定](#22-通信設定ポートボーレートなど)の「USB経由」列通りに変更
+	<br>![daizai1_2_comp.png](./images/p1/p1_2_TeraTerm_SerialPort_Config1.png)
+	<br>![daizai1_2_comp.png](./images/p1/p1_2_TeraTerm_SerialPort_Config2.png)
+	>確認：Tera Termの画面に「Hello, world!」が繰り返し表示されていれば、USB経由の接続は成功
 
-#### USB経由の動作確認
-
-
-#### デバッグプローブ(UART通信)経由の動作確認
+6. 再度Tera Termを起動し、シリアル欄より「デバッグプローブ経由の接続」を行ったポート番号を指定
+   
+7. 設定タブより「シリアルポート」を選択し、設定値を[2.2 通信設定](#22-通信設定ポートボーレートなど)の「デバッグプローブ経由」列通りに変更
+	>確認：Tera Termの画面に「Hello, world!」が繰り返し表示されていれば、デバッグプローブ経由の接続は成功
 
 ## 3. プロジェクト作成
 
