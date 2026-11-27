@@ -200,7 +200,7 @@ target_link_libraries([プロジェクト名]
 ビルド完了後、ボードに[プロジェクト名].uf2ファイルを書き込む必要がある  
 書き込む手順は3種類あり、以下にその手順を記載する
 - USB接続による書き込み（ドライブにコピー）
-1. ボードのbootselボタンを押しながらUSBでPCに接続する
+1. ボードのbootselボタンを押しながらUSB(黒)でPCに接続する
 1. ドライブが認識されたら**bootselボタン**を離す
 1. buildフォルダにある[プロジェクト名].uf2ファイルをコピー
 1. 認識したドライブの直下にファイルをコピー
@@ -208,7 +208,7 @@ target_link_libraries([プロジェクト名]
 
   参照画像
     <details>
-    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary>
+    <summary>USB(黒)接続で認識されるドライブ(クリックして詳細を表示)</summary>
     ※pico Wではドライブ名は**RPI-RP2**  
     　pico 2Wではドライブ名は**RP2350**
     <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
@@ -220,7 +220,7 @@ target_link_libraries([プロジェクト名]
   </details>  
 
 - picotoolによる書き込み（USB経由）
-1. ボードの**bootselボタン**を押しながらUSBでPCに接続する
+1. ボードの**bootselボタン**を押しながらUSB(黒)でPCに接続する
 1. ドライブが認識されたら**bootselボタン**を離す
 1. vscodeの画面下部にある**Runボタン**を押下
   >確認：手順実施後、ターミナルの右枠にある**Run Project**にチェックマークがついていれば成功  
@@ -232,11 +232,10 @@ target_link_libraries([プロジェクト名]
   </details>  
 
 - Debug Probeによる書き込み（SWD経由）
-1. Debug ProbeのD側をPicoのDEBUG端子に接続
-1. 接続したDebug ProbeをPCに接続
-1. picoとPCをUSBで接続
-1. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
-1. 表示されるメニューから**Flash Project (SWD)**を実行
+1. Debug ProbeとPCをUSB(白)で接続
+2. マイコンとPCをUSB(黒)で接続
+3. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
+4. 表示されるメニューから**Flash Project (SWD)**を実行
   >確認：手順実施後、ターミナルの右枠にある**Flush**にチェックマークがついていれば成功  
 
   参照画像
