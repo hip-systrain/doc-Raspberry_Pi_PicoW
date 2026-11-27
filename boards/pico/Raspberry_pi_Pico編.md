@@ -10,18 +10,18 @@
 
 | 項目 | 内容 |
 |---|---|
-| 対象ボード | |
-| 開発言語 | |
-| IDE・ツール | (名称とバージョン) |
-| SDK・ライブラリ | (名称とバージョン) |
-| 開発PCのOS | (例:Windows 11 24H2) |
-| 最終検証日 | (yyyy/mm/dd) |
+| 対象ボード | Raspberry Pi Pico W / Raspberry Pi Pico 2 W |
+| 開発言語 | C / C++（発展：MicroPython） |
+| IDE・ツール | Visual Studio Code（v1.x.x）<br>Raspberry Pi Pico 拡張機能（v0.x.x）<br>Tera Term（v5.7.1）<br>Zadig（v2.x ※Pico W のみ） |
+| SDK・ライブラリ | Raspberry Pi Pico SDK（v2.x.x）<br>FreeRTOS（v11.x.x） |
+| 開発 PC の OS | Windows 11 24H2 |
+| 最終検証日 | 2026/11/27 |
 
 ## 改版履歴
 
 | 版 | 日付 | 担当者 | 内容 |
 |---|---|---|---|
-| 0.1 | (yyyy/mm/dd) | | 新規作成 |
+| 0.1 | 2026/11/27 | （担当者名） | 新規作成 |
 
 ---
 
@@ -32,18 +32,18 @@
 本手順書は、**Raspberry Pi Pico W** および **Raspberry Pi Pico 2 W** を対象とした、C/C++ 言語による組込み開発の環境構築から実機での動作確認・デバッグまでの一連の手順をまとめたものです。
 
 なお、本手順書内では用語を以下のように統一して記載します。
+
 * **マイコン**: Raspberry Pi Pico W と Raspberry Pi Pico 2 W の両方を指す場合
-* **Pico W** / **Pico 2W**: それぞれのボード単体を指す場合
+* **Pico W** / **Pico 2 W**: それぞれのボード単体を指す場合
 
 最後まで進めることで、以下の作業ができるようになります。
 
 * **開発環境の構築**: Visual Studio Code（VS Code）と公式拡張機能を用いた C/C++ ビルド環境のセットアップ
-* **プロジェクトの作成とビルド**: 対象マイコン（Pico W / Pico 2W）に合わせた新規プロジェクトの作成とビルド
+* **プロジェクトの作成とビルド**: 対象マイコン（Pico W / Pico 2 W）に合わせた新規プロジェクトの作成とビルド
 * **基本機能の実装（RTOS なし）**: LED 点滅（題材 1）、ボタン入力（題材 2）、UART 出力（題材 3）、タイマ割込み（題材 4）の実装と実機での動作確認
 * **マルチタスクの実装（FreeRTOS）**: FreeRTOS の導入・設定、および複数タスク（題材 5）、タスク間通信（題材 6）の実装
-* **実機デバッグとログ確認**: Raspberry Pi デバッグプローブを用いた書き込み、ブレークポイント・ステップ実行、変数・レジスタ確認、およびシリアルターミナルでの UART ログ確認
+* **実機デバッグとログ確認**: Raspberry Pi デバッグプローブを用いた書込み、ブレークポイント・ステップ実行、変数・レジスタ確認、およびシリアルターミナルでの UART ログ確認
 * **MicroPython による開発（発展）**: MicroPython 環境の構築と基本題材（題材 1 〜 4）の実装・デバッグ
-* **ソースコードのバージョン管理**: チームの Git / GitHub 運用ルールに基づいたソースコードのコミット・プッシュ
 
 ---
 
@@ -55,7 +55,7 @@
 |---|---|---|
 | Raspberry Pi Pico W / Pico 2 W | 1 人 1 台 | 開発するボード |
 | Raspberry Pi デバッグプローブ | 1 人 1 台 | デバッグ・UART 接続 |
-| USB ケーブル（データ通信対応） | 1 人 2 本 | マイコンとプローブ用 |
+| USB ケーブル（データ通信対応） | 1 人 2 本 | マイコンとデバッグプローブ用 |
 | ブレッドボード・ジャンパ線 | 1 人 1 式 | 配線 |
 | タクトスイッチ | 1 人 1 個 | 題材 2（ボタン入力） |
 
@@ -63,7 +63,7 @@
 
 ---
 
-#### 0.3 前提知識・事前準備
+### 0.3 前提知識・事前準備
 
 本手順書を進めるにあたり、以下の知識および環境が事前に準備されていることを前提とします。未完了の項目がある場合は、先に該当する手順書を参照して準備を整えてください。
 
@@ -71,18 +71,12 @@
 
 * **Windows の基本操作**: エクスプローラーでのファイル操作、デバイスマネージャーでの COM ポート確認、およびコマンドプロンプトの基本的な操作ができること
 * **C/C++ 言語の基礎文法**: 変数、関数、ヘッダファイル（`.h` / `.hpp`）とソースファイル（`.c` / `.cpp`）の基本的な構造を理解していること
-* **Git / GitHub の基本操作**: ブランチの作成、コミット、プッシュといった基本的なバージョン管理の流れを理解していること
+* **Pico W / Pico 2 W の基本仕様**: 自身が使用するマイコン（RP2040 搭載の Pico W か、RP2350 搭載の Pico 2 W か）を把握しており、BOOTSEL ボタンや SWD デバッグ端子、GPIO ピン配置の概要を理解していること
 
 #### 0.3.2 事前準備（環境・ツール）
 
-* **開発用 PC の用意**: Windows 11（64bit）推奨。USB ポートが 2 口以上空きがあること（不足する場合は USB ハブを用意すること）
+* **開発用 PC の用意**: Windows 11（64 bit）推奨。USB ポートが 2 口以上空きがあること（不足する場合は USB ハブを用意すること）
 * **Visual Studio Code（VS Code）のインストール**: 最新版の VS Code が開発用 PC にインストール済みであること
-* **Git のインストールと初期設定**: コマンドプロンプトから `git` コマンドが実行でき、ユーザー名・メールアドレスの設定が完了していること
-* **GitHub および Redmine のアカウント準備**:
-  * 対象リポジトリへのアクセス権限（Collaborator 権限）が付与されていること
-  * 作業チケットの起票・確認ができるよう Redmine にログインできること
-
-> 注意: 運用ルールに従い、作業用ブランチの命名やコミットメッセージには Redmine のチケット番号を必ず紐づけて管理すること。
 
 ---
 
@@ -90,7 +84,7 @@
 
 本章では、マイコン開発に必要なソフトウェア（シリアルターミナル・VS Code 拡張機能）およびドライバのインストールを行います。
 
-> 注意: Visual Studio Code（VS Code）本体および Git のインストールは、「0.3 前提知識・事前準備」にて完了していることを前提とする。未完了の場合は先に準備を済ませること。
+> 注意: Visual Studio Code（VS Code）のインストールは、「0.3 前提知識・事前準備」にて完了していることを前提とする。未完了の場合は先に準備を済ませること。
 
 ---
 
@@ -98,8 +92,8 @@
 
 #### 1.1.1 Tera Term のインストール
 
-本節では、PC とマイコンをシリアル通信で接続し、データの送受信や確認をするために使用する TeraTerm のインストール手順を記載する。  
-なお、Tera TermがPCにインストールされていない場合のみ、本節の手順を実施すること。  
+本節では、PC とマイコンをシリアル通信で接続し、データの送受信や確認をするために使用する Tera Term のインストール手順を記載する。  
+なお、Tera Term が PC にインストールされていない場合のみ、本節の手順を実施すること。
 
 1. 下記のリンクより、Tera Term 公式 GitHub にアクセスする。  
    [Tera Term 公式 GitHub](https://github.com/TeraTermProject/teraterm/releases)
@@ -128,21 +122,25 @@
 13. 「インストールの準備完了」画面が開いたら、**インストール(I)** を押下する。  
     ![インストール準備完了](images/p1/p1_1_TeraTermSetupOK.png)
 
-> 確認: 「Tera Term セットアップウィザードの完了」が表示されればインストール成功。  
+> 確認: 「Tera Term セットアップウィザードの完了」が表示されれば成功。  
 > ![インストール完了画面](images/p1/p1_1_TeraTermInstallOK.png)
 
 #### 1.1.2 VS Code 拡張機能のインストール
 
 本節では、VS Code 上でマイコンのプロジェクト作成やビルド、デバッグを行うために使用する公式拡張機能 **Raspberry Pi Pico** のインストール手順を記載する。
 
-1. VS Code を起動する。  
+1. VS Code を起動する。
 2. 左側のアクティビティバーにある「拡張機能」アイコンをクリックする。  
+   ![拡張機能アイコン押下](images/p1/p1_1_VSCode_Extensions.png)
 3. 検索ボックスに `Raspberry Pi Pico` と入力する。  
+   ![検索ボックス](images/p1/p1_1_VSCode_Search.png)  
 4. 発行元が **raspberry-pi** となっている **Raspberry Pi Pico** を選択する。  
+   ![検索ボックス](images/p1/p1_1_VSCode_Choose.png)
+択する。  
 5. 「インストール」ボタンをクリックする。  
    ![インストールボタン押下](images/p1/p1_1_VSCode_Marketplace.png)
 
-> 確認: インストール完了後、左側のアクティビティバーに Raspberry Pi のアイコンが表示されればインストール成功。  
+> 確認: インストール完了後、左側のアクティビティバーに Raspberry Pi のアイコンが表示されれば成功。  
 > ![Raspberry Pi アイコン表示](images/p1/p1_1_VSCode_InstallCheck.png)
 
 > 注意: 拡張機能のインストール後、必要なツールや SDK の自動ダウンロードがバックグラウンドで実行される場合がある。画面右下の通知が消えるまで待つこと。また、同名の非公式拡張機能と間違えないよう、発行元が **raspberry-pi** であることを必ず確認すること。
@@ -153,8 +151,8 @@
 
 使用するマイコンによって、ドライバインストールの要否が異なります。
 
-* **Pico W を使用する場合**: Windows 環境で USB 通信・書き込みを行うため、**Zadig** を用いてドライバをインストールする（以下の手順を実施）。
-* **Pico 2W を使用する場合**: Windows 標準ドライバで動作するため、本節の作業は**不要**。「1.3 インストールできたことの確認」へ進むこと。
+* **Pico W を使用する場合**: Windows 環境で USB 通信・書込みを行うため、**Zadig** を用いてドライバをインストールする（以下の手順を実施）。
+* **Pico 2 W を使用する場合**: Windows 標準ドライバで動作するため、本節の作業は**不要**。「1.3 インストールできたことの確認」へ進むこと。
 
 #### 1.2.1 Zadig のダウンロードとドライバのインストール（Pico W のみ）
 
@@ -163,10 +161,10 @@
    ![Zadig 公式サイト](images/p1/p1_2_zadig_site.png)
 2. ページ内の Download 欄から最新版の **Zadig 2.x** をダウンロードする。  
    ![Zadig ダウンロードリンク](images/p1/p1_2_zadig_download.png)
-3. Pico W 本体の **BOOTSEL ボタン** を押したまま、USB ケーブルで PC と接続する。  
+3. Pico W 本体の **BOOTSEL ボタン** を押したまま、USB ケーブルで PC と接続する。
 4. PC に接続したら、**BOOTSEL ボタン** から指を離す。
 5. ダウンロードした **zadig-2.x.exe** をダブルクリックする。  
-   ![Options メニュー選択](images/p1/p1_2_zadig_DownlaodSelect.png)
+   ![Zadig 実行ファイル選択](images/p1/p1_2_zadig_DownlaodSelect.png)
 6. 「ユーザーアカウント制御」画面が表示されたら、管理者権限で実行する。
 7. Zadig が起動したら、メニューバーの **Options** をクリックする。  
    ![Options メニュー選択](images/p1/p1_2_zadig_options.png)
@@ -176,10 +174,10 @@
    ![RP2 Boot (Interface 1) 選択](images/p1/p1_2_zadig_device.png)
 10. 矢印（`->`）の右側にあるドライバ選択欄の矢印をクリックし、**WinUSB (v6.1.xxxx.xxxxx)** を選択する。  
     ![WinUSB ドライバ選択](images/p1/p1_2_zadig_winusb.png)
-11. **Install Driver**（すでにドライバが入っている場合は **Replace Driver**）を押下する。  
+11. **Install Driver**（すでにドライバが入っている場合は **Reinstall Driver**）を押下する。  
     ![Install Driver ボタン押下](images/p1/p1_2_zadig_install.png)
 
-> 確認: 「The driver was installed successfully.」のダイアログが表示されればインストール成功。確認後、「×」ボタンを押下して Zadig を閉じ、PC から Pico W の USB ケーブルを一度抜くこと。  
+> 確認: 「The driver was installed successfully.」のダイアログが表示されれば成功。確認後、「×」ボタンを押下して Zadig を閉じ、PC から Pico W の USB ケーブルを一度抜くこと。  
 > ![ドライバインストール完了画面](images/p1/p1_2_zadig_ok.png)
 
 > 注意: プルダウンメニューでは必ず **RP2 Boot (Interface 1)** を選択すること。PC に接続されているマウスやキーボードなど、別の USB 機器のドライバを誤って書き換えないよう十分注意すること。
@@ -191,12 +189,16 @@
 ここまでの手順で必要なツールと環境が正しくセットアップできているかを確認します。
 
 1. Windows のスタートメニューから **Tera Term** を起動し、起動ダイアログが表示されることを確認する。確認後、「キャンセル」を押して閉じる。  
-    ![Tera Term 起動確認](images/p1/p1_3_TeraTermCheck.png)  
-2. VS Code を開き、左側のアクティビティバーにある **Raspberry Pi のアイコン** をクリックする。  
-3. サイドバーに「New C/C++ Project」「Import Project」などのメニューがエラーなく表示されることを確認する。  
-    ![Tera Term 起動確認](images/p1/p1_3_VSCode_RaspberryPiCheck.png)
-
-> 確認: Tera Term が正常に起動し、VS Code の Raspberry Pi 拡張機能メニューが表示されていれば開発環境の構築は完了。
+   ![Tera Term 起動確認](images/p1/p1_3_TeraTermCheck.png)
+2. VS Code を開き、左側のアクティビティバーにある **Raspberry Pi のアイコン** をクリックする。
+3. サイドバーに「New C/C++ Project」「Import Project」などのメニューが表示されることを確認する。  
+<table>
+  <tr>
+    <td><img src="images/p1/p1_3_VSCode_RaspberryPiOpen.png" width="250"></td>
+    <td><img src="images/p1/p1_3_VSCode_RaspberryPiCheck.png" width="250"></td>
+  </tr>
+</table>
+> 確認: Tera Term が正常に起動し、VS Code の Raspberry Pi 拡張機能メニューが表示されていれば成功。
 
 ---
 
