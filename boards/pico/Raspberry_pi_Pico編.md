@@ -246,8 +246,7 @@ int main(void)
 1. Debug ProbeとPCをUSB(白)で接続
 2. マイコンとPCをUSB(黒)で接続
 3. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
-4. 表示されるメニューから**Flash Project (SWD)**を実行
-
+4. 表示されるメニューから **Flash Project (SWD)** を実行
 >確認：手順実施後、ターミナルの右枠にある**Flush**にチェックマークがついていれば成功  
 
   参照画像
