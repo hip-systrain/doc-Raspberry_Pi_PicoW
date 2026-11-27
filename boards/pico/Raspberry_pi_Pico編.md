@@ -115,12 +115,12 @@
 
 #### 4.1.3 プログラム
 題材1の動作に必要なファイルの詳細を記載する。  
-以下の折りたたみの内容を該当するファイルに貼り付けること
+以下の折りたたみの内容を該当するファイルに貼り付けること。
 <details>
 <summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
-[プロジェクト名].cppファイル内のコードを以下に変更する。
+[プロジェクト名].cファイル内のコードを以下の内容に変更する。
 
-```cpp
+```c
 #include <stdio.h>
 #include "pico/stdlib.h"       // Pico SDKの基本機能を使用するためのヘッダ
 #include "pico/cyw43_arch.h"   // CYW43チップ（オンボードLED）の制御用ヘッダ
@@ -156,7 +156,7 @@ int main(void)
 
 <details>
 <summary>CMakeLists.txt内の変更(クリックして詳細を表示)</summary> 
-CMakeLists.txtは全て変更はせず、以下の項目のみ変更する
+CMakeLists.txtは全て変更はせず、以下の項目のみ変更する。
 
 ```
 変更前
@@ -175,14 +175,14 @@ target_link_libraries([プロジェクト名]
 
 </details>
 
-#### 4.1.4 ビルドと書き込み
-#### ビルド  
-コーディング後、以下の手順でビルドを行う
-1. vscodeの画面下部にある**compileボタン**を押下
-2. ターミナルが表示されビルドが実行される
-3. 「**ターミナルはタスクで再利用されます、閉じるには任意のキーを押してください。**」と表示でビルド終了 
-4. ターミナルの右枠にある**Compile Project**にチェックマークがついていていることを確認
-5. buildフォルダに.uf2ファイルが存在していればビルド成功  
+#### 4.1.4 ビルド  
+コーディング後、以下の手順でビルドを行う。
+1. vscodeの画面下部にある**compileボタン**を押下する
+1. ターミナルに「**ターミナルはタスクで再利用されます、閉じるには任意のキーを押してください。**」と表示されることを確認する 
+1. ターミナルの右枠にある**Compile Project**にチェックマークがついていていることを確認  
+    >注意：チェックマークではなく✕のマークの場合、ビルドに失敗しているため、コード修正後に再度実行すること。 
+
+>確認：buildフォルダに[プロジェクト名].uf2ファイルが存在していれば成功  
 
 参照画像
 <details>
@@ -192,24 +192,23 @@ target_link_libraries([プロジェクト名]
 </details>
 
 <details>
-<summary>ビルド後に生成される.uf2ファイル(クリックして詳細を表示)</summary>
+<summary>ビルド後に生成される[プロジェクト名].uf2ファイル(クリックして詳細を表示)</summary>
 <br><img src="./images/p2/p2_4_uf2.png"  style="border: 1px solid black;" alt="p2_4_uf2.png">  
 </details>
 
-#### 書き込み  
-ビルド完了後、ボードに.uf2ファイルを書き込む必要がある  
+#### 4.1.5 書き込み  
+ビルド完了後、ボードに[プロジェクト名].uf2ファイルを書き込む必要がある  
 書き込む手順は3種類あり、以下にその手順を記載する
 - USB接続による書き込み（ドライブにコピー）
-  1. ボードのbootselボタンを押しながらUSBでPCに接続する
-  2. ドライブが認識されたら**bootselボタン**を離す
-  3. buildフォルダにある.uf2ファイルをコピー
-  4. 認識したドライブの直下にファイルをコピー
-  5. コピー後、ドライブが切断される  
+1. ボードのbootselボタンを押しながらUSBでPCに接続する
+1. ドライブが認識されたら**bootselボタン**を離す
+1. buildフォルダにある[プロジェクト名].uf2ファイルをコピー
+1. 認識したドライブの直下にファイルをコピー
+  >確認：コピー後、ドライブが切断されれば成功  
 
   参照画像
     <details>
     <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary>
-
     ※pico Wではドライブ名は**RPI-RP2**  
     　pico 2Wではドライブ名は**RP2350**
     <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
@@ -219,11 +218,12 @@ target_link_libraries([プロジェクト名]
   <summary>認識したドライブの直下にファイルをコピー(クリックして詳細を表示)</summary> 
   <br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">  
   </details>  
+
 - picotoolによる書き込み（USB経由）
-  1. ボードの**bootselボタン**を押しながらUSBでPCに接続する
-  2. ドライブが認識されたら**bootselボタン**を離す
-  3. vscodeの画面下部にある**Runボタン**を押下
-  4. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認  
+1. ボードの**bootselボタン**を押しながらUSBでPCに接続する
+1. ドライブが認識されたら**bootselボタン**を離す
+1. vscodeの画面下部にある**Runボタン**を押下
+  >確認：手順実施後、ターミナルの右枠にある**Run Project**にチェックマークがついていれば成功  
 
   参照画像
   <details>
@@ -232,12 +232,12 @@ target_link_libraries([プロジェクト名]
   </details>  
 
 - Debug Probeによる書き込み（SWD経由）
-  1. Debug ProbeのD側をPicoのDEBUG端子に接続
-  2. 接続したDebug ProbeをPCに接続
-  3. picoとPCをUSBで接続
-  4. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
-  5. 表示されるメニューから**Flash Project (SWD)**を実行
-  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認  
+1. Debug ProbeのD側をPicoのDEBUG端子に接続
+1. 接続したDebug ProbeをPCに接続
+1. picoとPCをUSBで接続
+1. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
+1. 表示されるメニューから**Flash Project (SWD)**を実行
+  >確認：手順実施後、ターミナルの右枠にある**Flush**にチェックマークがついていれば成功  
 
   参照画像
   <details>
@@ -247,22 +247,21 @@ target_link_libraries([プロジェクト名]
 
 上記のいずれかの方法で書き込みを行う
 
-#### 4.1.5 動作確認
-書き込みを実施後、ボードのオンボードLEDが0.5秒の間隔で点滅していることを確認する
+#### 4.1.6 動作確認
+書き込みを実施後、ボードのオンボードLEDが0.5秒の間隔で点滅していることを確認する。
 
 ### 4.2 題材2:ボタン入力
 #### 4.2.1 題材2で作成するもの
-題材2では、ボードのタクトスイッチを押すと、オンボードのLEDが点灯するプログラムを作成します
+題材2では、ボードのタクトスイッチを押すと、オンボードのLEDが点灯するプログラムを作成する。
 #### 4.2.2 配線 <!-- 記載の有無を要確認 -->
 #### 4.2.3 プログラム
 題材2の動作に必要なファイルの詳細を記載する。
-以下の変更を該当するファイルに貼り付けること
+以下の変更を該当するファイルに貼り付けること。
 <details>
 <summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
-[プロジェクト名].cppファイル内のコードを以下に変更する。
+[プロジェクト名].cファイル内のコードを以下に変更する。
 
-```cpp
-
+```c
 #include "pico/stdlib.h"       // GPIOや時間管理など、Pico SDKの基本機能
 #include "pico/cyw43_arch.h"   // Pico 2 WのオンボードLEDを制御する機能
 #include "hardware/sync.h"     // 割込みの一時停止・再開に使用する機能
@@ -394,16 +393,14 @@ int main(void)
 <br>CMakeLists.txt内の変更  
 [# 4.1.3 プログラム](#413-プログラム)のCMakeLists.txt内の変更の折りたたみの内容であることを確認する
 
+#### 4.2.4 ビルド  
+[4.1.4 ビルド](#414-ビルド)の項目を参照し、ビルドを行う。
 
-#### 4.2.4 ビルドと書き込み
-#### ビルド  
-**4.1.4 ビルドと書き込み**にある[ビルド](#ビルド)の項目を参照し、ビルドを行う。
+#### 4.2.5 書き込み  
+[4.1.5 書き込み](#415-書き込み)の項目を参照し、書き込みを行う。
 
-#### 書き込み  
-**4.1.4 ビルドと書き込み**にある[書き込み](#書き込み)の項目を参照し、書き込みを行う。
-
-#### 4.2.5 動作確認  
-タクトスイッチを押下するとLEDが点灯し、離すと消灯することを確認する
+#### 4.2.6 動作確認  
+書き込み実行後、タクトスイッチを押下するとLEDが点灯し、離すと消灯することを確認する。
 
 ### 4.3 題材3:UART出力
 #### 4.3.1 題材3で作成するもの
@@ -416,9 +413,9 @@ UARTを利用してシリアルターミナルにボタンを押した回数を�
 以下の折りたたみの内容を該当するファイルに貼り付けること
 <details>
 <summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
-[プロジェクト名].cppファイル内のコードを以下に変更する。
+[プロジェクト名].cファイル内のコードを以下に変更する。
 
-```cpp
+```c
 #include <cstdio>              // printf()を使用するためのヘッダ
 #include "pico/stdlib.h"       // Pico SDKの基本機能
 #include "hardware/uart.h"    // UART通信機能
@@ -562,98 +559,151 @@ pico_enable_stdio_usb([プロジェクト名] 0)
 
 </details>
 
-#### 4.3.4 ビルドと書き込み
-#### ビルド  
-**4.1.4 ビルドと書き込み**にある[ビルド](#ビルド)の項目を参照し、ビルドを行う。
+#### 4.3.4 ビルド  
+[4.1.4 ビルド](#414-ビルド)の項目を参照し、ビルドを行う。
 
-#### 書き込み  
-ビルド完了後、ボードに.uf2ファイルを書き込む必要がある
-書き込む手順は3種類あり、以下にその手順を記載する
-- USB接続による書き込み（ドライブにコピー）
-  1. Debug ProbeのD側をPicoのDEBUG端子に接続
-  2. 接続したDebug ProbeをPCに接続
-  3. ボードのbootselボタンを押しながらUSBでPCに接続する
-  4. ドライブが認識されたら**bootselボタン**を離す
-  5. buildフォルダにある.uf2ファイルをコピー
-  6. 認識したドライブの直下にファイルをコピー
-  7. コピー後、ドライブが切断される
+#### 4.3.5 書き込み  
+[4.1.5 書き込み](#415-書き込み)の項目を参照し、ビルドを行う。
 
-  参照画像
-    <details>
-    <summary>USB接続で認識されるドライブ(クリックして詳細を表示)</summary>
-
-    ※pico Wではドライブ名は**RPI-RP2**  
-    　pico 2Wではドライブ名は**RP2350**
-    <br><img src="./images/p2/p2_4_drive.png"  style="border: 1px solid black;" alt="p2_4_drive.png">  
-    </details>
-
-  <details>
-  <summary>認識したドライブの直下にファイルをコピー(クリックして詳細を表示)</summary> 
-  <br><img src="./images/p2/p2_4_drive_copy.png"  style="border: 1px solid black;" alt="p2_4_drive_copy.png">  
-  </details>  
-- picotoolによる書き込み（USB経由）
-  1. Debug ProbeのD側をPicoのDEBUG端子に接続
-  2. 接続したDebug ProbeをPCに接続
-  3. ボードの**bootselボタン**を押しながらUSBでPCに接続する
-  4. ドライブが認識されたら**bootselボタン**を離す
-  5. vscodeの画面下部にある**Runボタン**を押下
-  6. ターミナルの右枠にある**Run Project**にチェックマークがついていていることを確認  
-
-  参照画像
-  <details>
-  <summary>RunボタンとRun Projectの確認(クリックして詳細を表示)</summary> 
-    <br><img src="./images/p2/p2_4_run.png"  alt="p2_4_run.png">  
-  </details>  
-
-- Debug Probeによる書き込み（SWD経由）
-  1. Debug ProbeのD側をPicoのDEBUG端子に接続
-  2. 接続したDebug ProbeをPCに接続
-  3. picoとPCをUSBで接続
-  4. VSCodeの左側にあるアクティビティバーから、**raspberry pi pico**を押下
-  5. 表示されるメニューから**Flash Project (SWD)**を実行
-  6. ターミナルの右枠にある**Flush**にチェックマークがついていていることを確認  
-
-  参照画像
-  <details>
-  <summary>Flash ProjectとFlushの確認(クリックして詳細を表示)</summary> 
-    <br><img src="./images/p2/p2_4_Flash.png"  alt="p2_4_Flash.png">  
-  </details>  
-
-上記のいずれかの方法で書き込みを行う
-
-#### 4.3.5動作確認
-teratermを使用し、以下の手順でメッセージの確認を行う  
+#### 4.3.6 動作確認
+書き込み実施後、teratermを使用して以下の手順でメッセージの確認を行う。  
 1. teratermを起動
-2. シリアルを選択
-3. ボードはUSB シリアル デバイスを選択
-4. OKを押下
-5. 設定タブからシリアルポートを選択
-6. スピードの項目を115200に変更  
+1. シリアルを選択
+1. ボードはUSB シリアル デバイスを選択
+1. OKを押下
+1. 設定タブからシリアルポートを選択
+1. スピードの項目を115200に変更  
 ※プログラム記載のUART_BAUD_RATEの値を設定  
-7. ボードのタクトスイッチを複数回押下
-8. スイッチの押下1回ごとにメッセージが表示され、表示内容が**押下回数: (押下回数)回**であることを確認すれば成功
+1. ボードのタクトスイッチを複数回押下
+>確認：スイッチの押下1回ごとにメッセージが表示される。  
+また、表示内容が**押下回数: (押下回数)回**であることを確認すれば成功
 
   参照画像
   <details>
-  <summary>teratermの設定(クリックして詳細を表示)</summary> 
-  　ポートの選択
-    <br><img src="./images/p2/p2_4_tera_top.png"  alt="p2_4_tera_top.png">  
+  <summary>シリアルターミナルの表示確認(クリックして詳細を表示)</summary> 
+  複数回ボタンを押下した際の表示
+    <br><img src="./images/p2/p2_4_tera_check.png"  alt="p2_4_tera_top.png">  
   </details>  
-
 
 ### 4.4 題材4:タイマ割込み
 #### 4.4.1 題材4で作成するもの
-
+題材4ではタイマ割込みを用いて、0.5秒ごとにオンボードのLEDが点滅するプログラムを作成する。
 #### 4.4.2 配線 <!-- 記載の有無を要確認 -->
 
 #### 4.4.3 プログラム
+題材4の動作に必要なファイルの詳細を記載する。  
+以下の折りたたみの内容を該当するファイルに貼り付けること。
+<details>
+<summary>[プロジェクト名].cの変更(クリックして詳細を表示)</summary>
 
-#### 4.4.4 ビルドと書き込み
-#### ビルド
+```c
+#include "pico/stdlib.h"       // Pico SDKの基本機能
+#include "pico/cyw43_arch.h"   // Pico 2 WのオンボードLED制御
 
-#### 書き込み
+// タイマ割込みによって変更されるLEDの状態
+volatile bool led_state = false;
 
-#### 4.4.5 動作確認
+
+// タイマ割込み時に呼び出される関数を定義する
+bool timer_callback(repeating_timer_t *rt)
+{
+    // LEDの状態を反転させる
+    if (led_state == false) {
+        led_state = true;
+    } else {
+        led_state = false;
+    }
+    
+    return true;
+}
+
+
+int main(void)
+{
+    // CYW43チップを初期化する
+    int init_result = cyw43_arch_init();
+
+    if (init_result != 0) {
+        return -1;
+    }
+
+    // 起動時にLEDを消灯する
+    cyw43_arch_gpio_put(CYW43_WL_GPIO_LED_PIN, 0);
+
+    // 繰り返しタイマを管理する構造体
+    repeating_timer_t timer;
+
+    // 0.5秒間隔でタイマ割込みを発生させる
+    // タイマ割込みが発生するたびにtimer_callback関数を呼び出す
+    bool timer_result = add_repeating_timer_ms(
+        500,
+        timer_callback,
+        NULL,
+        &timer
+    );
+
+    // タイマ割込みの設定に失敗した場合は終了する
+    if (timer_result == false) {
+        return -1;
+    }
+
+    // メインループ側の現在のLEDの状態を保持する変数
+    bool current_led_state = false;
+
+    // メインループ
+    while (true) {
+
+        // タイマ割込みによってLEDの状態が変わったか確認
+        if (led_state != current_led_state) {
+
+            // LEDの状態を更新する
+            current_led_state = led_state;
+            
+            // current_led_stateの状態を参照しLEDを点灯/消灯させる
+            cyw43_arch_gpio_put(
+                CYW43_WL_GPIO_LED_PIN,
+                current_led_state
+            );
+        }
+
+        // CPUの無駄な処理を抑えるため1ミリ秒待機
+        sleep_ms(1);
+    }
+
+    return 0;
+}
+```
+
+</details>
+
+<details>
+<summary>CMakeLists.txt内の変更(クリックして詳細を表示)</summary> 
+CMakeLists.txtは全て変更はせず、以下の項目のみ変更する
+
+```
+変更前
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart([プロジェクト名] 1)
+pico_enable_stdio_usb([プロジェクト名] 0)
+```
+
+```
+変更後
+# Modify the below lines to enable/disable output over UART/USB
+pico_enable_stdio_uart([プロジェクト名] 0)
+pico_enable_stdio_usb([プロジェクト名] 1) 
+```
+
+</details>
+
+#### 4.4.4 ビルド  
+[4.1.4 ビルド](#414-ビルド)の項目を参照し、ビルドを行う。
+
+#### 4.4.5 書き込み  
+[4.1.5 書き込み](#415-書き込み)の項目を参照し、書き込みを行う。
+
+#### 4.4.6 動作確認
+書き込みを実施後、ボードのオンボードLEDが0.5秒の間隔で点滅していることを確認する。
 
 ## 5. コーディング・ビルド・書込み(FreeRTOS)
 
