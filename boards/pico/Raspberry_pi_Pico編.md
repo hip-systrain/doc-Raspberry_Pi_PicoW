@@ -93,13 +93,13 @@
 <br>なお、[9.MicroPython](#9-micropython)においては「REPL」を使用する。
 
 ### 2.1 使用するツールと接続方法
-本節では、Tera Termを使用するために必要なツールと、その接続方法を説明する。
-接続方法には、マイコンとPCを直接接続する方法と、デバッグプローブを介して接続する方法の二種類がある。
-どちらの接続方法でも、Tera Termによる文字列の送受信が可能である。
+本手順書においてシリアルターミナルとして使用するツールは、「Tera Term」である。
+<br>本節ではその接続方法を説明する。
+<br>接続方法は二種類ある。任意の接続方法でTeraTermと接続する。
 
 #### 2.1.1 USB経由の接続
 
-|必要なツール|概要|
+|必要な機材|概要|
 |:-|:-|
 |USBケーブル(黒)|マイコンとPCを接続する。|
 
@@ -108,7 +108,7 @@
 
 #### 2.1.2 デバッグプローブ経由の接続
 
-|必要なツール|概要|
+|必要な機材|概要|
 |:-|:-|
 |デバッグプローブ|マイコンからUART通信を行うため使用する。|
 |USBケーブル(白)|デバッグプローブとPCを接続する。|
@@ -120,20 +120,14 @@
 3. デバッグプローブとPCを、USB(白)で接続する。
 	>確認：[2.3 動作確認](#23-動作確認)にて、手順6の確認事項を満たせば成功
 
-### 2.2 通信設定(ポート、ボーレートなど)
+### 2.2 通信設定
 本節では、Tera Termでシリアル通信を行う際の設定方法を示す。
 
 1. Tera Termの設定タブより「シリアルポート」を選択する。
 	<br><img src="./images/p1/p1_2_TeraTerm_SerialPort_Config1.png" width="300">
 
-2. シリアルポートの設定画面が表示される。
+2. 設定画面で画像のように設定値を入力する。
 	<br><img src="./images/p1/p1_2_TeraTerm_SerialPort_Config2.png" width="300"> 
-
-3. 以下のように設定値を入力する。
-	|設定項目|設定値|
-	|:-|:-|
-	|スピード|115200 bps|
-	|その他の設定項目|デフォルト値|
 
 	>確認：[2.3 動作確認](#23-動作確認)にて、手順4,6の確認事項を満たせば成功
 
@@ -148,9 +142,9 @@
 	>|RPI-RP2|Pico W|
 	>|RP2350|Pico 2 W|
 
-2. 下記のuf2ファイルをダウンロードし、接続されたドライブに格納する。
+2. 下記の.uf2ファイルをダウンロードし、接続されたドライブに格納する。
 	>注意：ファイル格納後にドライブが自動切断されるが、正常な挙動である。
-	- [hello_universal.uf2](https://github.com/raspberrypi/pico-sdk-prebuilts/releases/latest/download/hello_universal.uf2)  （1秒おきに「Hello, world!」を繰り返し出力するプログラム。配布元は[Raspberry Pi公式GitHub](https://github.com/raspberrypi/pico-sdk-prebuilts)）
+	- - [hello_universal.uf2](https://github.com/raspberrypi/pico-sdk-prebuilts/releases/download/v2.3.1-0/hello_universal.uf2) （1秒おきに「Hello, world!」を繰り返し出力するプログラム。配布元：[Raspberry Pi公式GitHub](https://github.com/raspberrypi/pico-sdk-prebuilts/releases/tag/v2.3.1-0)）
 
 3. Tera Termを起動し、シリアル欄より [2.1.1 USB経由の接続](#211-usb経由の接続)のCOMポート番号を指定する。
 	<br><img src="./images/p1/p1_2_TeraTerm_init.png" width="300">
