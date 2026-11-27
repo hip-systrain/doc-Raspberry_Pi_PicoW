@@ -55,7 +55,7 @@
 |---|---|---|
 | Raspberry Pi Pico W / Pico 2 W | 1 人 1 台 | 開発するボード |
 | Raspberry Pi デバッグプローブ | 1 人 1 台 | デバッグ・UART 接続 |
-| USB ケーブル（データ通信対応） | 1 人 2 本 | マイコンとデバッグプローブ用 |
+| USB ケーブル（データ通信対応） | 1 人 2 本 | マイコン用(黒)<br>デバッグプローブ用(白) |
 | ブレッドボード・ジャンパ線 | 1 人 1 式 | 配線 |
 | タクトスイッチ | 1 人 1 個 | 題材 2（ボタン入力） |
 
@@ -135,8 +135,7 @@
 3. 検索ボックスに `Raspberry Pi Pico` と入力する。  
    ![検索ボックス](images/p1/p1_1_VSCode_Search.png)  
 4. 発行元が **raspberry-pi** となっている **Raspberry Pi Pico** を選択する。  
-   ![検索ボックス](images/p1/p1_1_VSCode_Choose.png)
-択する。  
+   ![拡張機能選択](images/p1/p1_1_VSCode_Choose.png)  
 5. 「インストール」ボタンをクリックする。  
    ![インストールボタン押下](images/p1/p1_1_VSCode_Marketplace.png)
 
